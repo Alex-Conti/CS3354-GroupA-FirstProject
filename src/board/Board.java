@@ -70,6 +70,23 @@ public class Board {
         }
     }
 
+// Updates piece position on board
+    public void movePiece(Position from, Position to) {
+        // Get pieces at start
+        Piece pieceToMove = grid[from.getRow()][from.getColumn()];
+
+        if (pieceToMove != null) {
+            // Moves piece to new position
+            grid[to.getRow()][to.getColumn()] = pieceToMove;
+            
+            // Empty old position
+            grid[from.getRow()][from.getColumn()] = null;
+            
+            // Update piece's new position
+            pieceToMove.move(to);
+        }
+    }
+
     // Converts object to string
     private String getPieceSymbol(Piece piece) {
         String prefix = piece.getColor().equals("white") ? "w" : "b";

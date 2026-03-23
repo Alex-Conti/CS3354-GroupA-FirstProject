@@ -16,7 +16,7 @@ public class Game {
         board = new Board();
         whitePlayer = new Player("white");
         blackPlayer = new Player("black");
-        currentTurn = whitePlayer;
+        currentTurn = whitePlayer; // White always moves first
     }
 
     public void start() {
@@ -52,6 +52,10 @@ public class Game {
                 if (from != null && to != null) {
                     System.out.println("Valid format! (Moving from " + fromStr.toUpperCase() + " to " + toStr.toUpperCase() + ")");
                     
+                    // Updates the visual board state
+                    board.movePiece(from, to);
+                    
+                    // Switch turns
                     currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
                 } else {
                     System.out.println("Invalid coordinates. Please stay within A1 to H8.");
@@ -64,7 +68,7 @@ public class Game {
     }
 
     public void end() {
-        System.out.println("Game Over. Thanks for playing!");
+        System.out.println("Game end");
     }
 
     // Runs game from terminal
