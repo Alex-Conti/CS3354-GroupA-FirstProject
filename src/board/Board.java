@@ -1,0 +1,84 @@
+package board;
+
+import pieces.*;
+
+/**
+ * Represents the 8x8 chessboard and manages the state of all pieces.
+ */
+public class Board {
+    // 2D array representing the 8x8 grid. Null means the square is empty.
+    private Piece[][] grid;
+
+// Board initalization and piece set up
+    public Board() {
+        grid = new Piece[8][8];
+        initialize();
+    }
+
+    // Sets all chess pieces into initial array
+    private void initialize() {
+        // Initialize Black pieces (Top of the board: Row 0 and 1)
+        grid[0][0] = new Rook("black", new Position(0, 0));
+        grid[0][1] = new Knight("black", new Position(0, 1));
+        grid[0][2] = new Bishop("black", new Position(0, 2));
+        grid[0][3] = new Queen("black", new Position(0, 3));
+        grid[0][4] = new King("black", new Position(0, 4));
+        grid[0][5] = new Bishop("black", new Position(0, 5));
+        grid[0][6] = new Knight("black", new Position(0, 6));
+        grid[0][7] = new Rook("black", new Position(0, 7));
+
+        for (int i = 0; i < 8; i++) {
+            grid[1][i] = new Pawn("black", new Position(1, i));
+        }
+
+        // Initializes White pieces 
+        for (int i = 0; i < 8; i++) {
+            grid[6][i] = new Pawn("white", new Position(6, i));
+        }
+
+        grid[7][0] = new Rook("white", new Position(7, 0));
+        grid[7][1] = new Knight("white", new Position(7, 1));
+        grid[7][2] = new Bishop("white", new Position(7, 2));
+        grid[7][3] = new Queen("white", new Position(7, 3));
+        grid[7][4] = new King("white", new Position(7, 4));
+        grid[7][5] = new Bishop("white", new Position(7, 5));
+        grid[7][6] = new Knight("white", new Position(7, 6));
+        grid[7][7] = new Rook("white", new Position(7, 7));
+    }
+
+     //Prints the current state of the board to the console including coordinates
+    public void display() {
+        System.out.println("   A  B  C  D  E  F  G  H");
+        for (int r = 0; r < 8; r++) {
+            // Print the rank number (8 down to 1)
+            System.out.print((8 - r) + " ");
+            
+            for (int c = 0; c < 8; c++) {
+                Piece p = grid[r][c];
+                if (p != null) {
+                    System.out.print(getPieceSymbol(p) + " ");
+                } else {
+                    // Create the alternating pattern for empty squares
+                    if ((r + c) % 2 == 1) {
+                        System.out.print("## ");
+                    } else {
+                        System.out.print("   ");
+                    }
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    // Converts object to string
+    private String getPieceSymbol(Piece piece) {
+        String prefix = piece.getColor().equals("white") ? "w" : "b";
+        if (piece instanceof Pawn) return prefix + "p";
+        if (piece instanceof Rook) return prefix + "R";
+        if (piece instanceof Knight) return prefix + "N";
+        if (piece instanceof Bishop) return prefix + "B";
+        if (piece instanceof Queen) return prefix + "Q";
+        if (piece instanceof King) return prefix + "K";
+        return "??";
+    }
+}
