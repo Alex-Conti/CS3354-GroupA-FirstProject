@@ -15,6 +15,10 @@ public class Board {
         initialize();
     }
 
+public Piece getPiece(Position pos) {
+        return grid[pos.getRow()][pos.getColumn()];
+    }
+
     // Sets all chess pieces into initial array
     private void initialize() {
         // Initialize Black pieces (Top of the board: Row 0 and 1)

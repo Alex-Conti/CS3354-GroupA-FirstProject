@@ -2,8 +2,10 @@ package game;
 
 import board.Board;
 import board.Position;
+import pieces.Piece;
 import utils.Utils;
 import java.util.Scanner;
+import java.util.List;
 
 // Controller for chess match
 public class Game {
@@ -16,7 +18,7 @@ public class Game {
         board = new Board();
         whitePlayer = new Player("white");
         blackPlayer = new Player("black");
-        currentTurn = whitePlayer; // White always moves first
+        currentTurn = whitePlayer;
     }
 
     public void start() {
@@ -50,18 +52,33 @@ public class Game {
                 Position to = Utils.parsePosition(toStr);
 
                 if (from != null && to != null) {
-                    System.out.println("Valid format! (Moving from " + fromStr.toUpperCase() + " to " + toStr.toUpperCase() + ")");
+                    Piece piece = board.getPiece(from);
                     
-                    // Updates the visual board state
-                    board.movePiece(from, to);
-                    
-                    // Switch turns
-                    currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
+                    if (piece != null && piece.getColor().equals(currentTurn.getColor())) {
+                        List<Position> legalMoves = piece.possibleMoves();
+                        boolean moveIsLegal = false;
+                        
+                        for (Position pos : legalMoves) {
+                            if (pos.getRow() == to.getRow() && pos.getColumn() == to.getColumn()) {
+                                moveIsLegal = true;
+                                break;
+                            }
+                        }
+
+                        if (moveIsLegal) {
+                            board.movePiece(from, to);
+                            currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
+                        } else {
+                            System.out.println("Invalid move for that piece");
+                        }
+                    } else {
+                        System.out.println("No piece of your color there.");
+                    }
                 } else {
-                    System.out.println("Invalid coordinates. Please stay within A1 to H8.");
+                    System.out.println("Invalid coordinates.");
                 }
             } else {
-                System.out.println("Invalid format. Please use [FROM] [TO] format, like 'E2 E4'.");
+                System.out.println("Invalid format. Use 'E2 E4'.");
             }
         }
         scanner.close();
