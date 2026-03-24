@@ -74,6 +74,29 @@ public Piece getPiece(Position pos) {
         }
     }
 
+    // Checks for potential collision errors
+    public boolean isPathClear(Position from, Position to) {
+        int r1 = from.getRow();
+        int c1 = from.getColumn();
+        int r2 = to.getRow();
+        int c2 = to.getColumn();
+
+        int rowStep = Integer.compare(r2, r1);
+        int colStep = Integer.compare(c2, c1);
+
+        int currR = r1 + rowStep;
+        int currC = c1 + colStep;
+
+        while (currR != r2 || currC != c2) {
+            if (grid[currR][currC] != null) {
+                return false;
+            }
+            currR += rowStep;
+            currC += colStep;
+        }
+        return true;
+    }
+
 // Updates piece position on board
     public void movePiece(Position from, Position to) {
         // Get pieces at start

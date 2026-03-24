@@ -51,7 +51,7 @@ public class Game {
                 Position from = Utils.parsePosition(fromStr);
                 Position to = Utils.parsePosition(toStr);
 
-                if (from != null && to != null) {
+            if (from != null && to != null) {
                     Piece piece = board.getPiece(from);
                     
                     if (piece != null && piece.getColor().equals(currentTurn.getColor())) {
@@ -66,10 +66,29 @@ public class Game {
                         }
 
                         if (moveIsLegal) {
-                            board.movePiece(from, to);
-                            currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
+                            // NEW: Prevent capturing your own pieces
+                            Piece destinationPiece = board.getPiece(to);
+                            if (destinationPiece != null && destinationPiece.getColor().equals(currentTurn.getColor())) {
+                                System.out.println("You cannot capture your own piece!");
+                                continue;
+                            }
+
+                            // NEW: Collision detection (Knights jump, so they skip this check)
+                            boolean pathBlocked = false;
+                            if (!(piece instanceof pieces.Knight)) {
+                                if (!board.isPathClear(from, to)) {
+                                    pathBlocked = true;
+                                }
+                            }
+
+                            if (!pathBlocked) {
+                                board.movePiece(from, to);
+                                currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
+                            } else {
+                                System.out.println("Path is blocked by another piece!");
+                            }
                         } else {
-                            System.out.println("Invalid move for that piece");
+                            System.out.println("Invalid move for that piece!");
                         }
                     } else {
                         System.out.println("No piece of your color there.");
@@ -77,9 +96,7 @@ public class Game {
                 } else {
                     System.out.println("Invalid coordinates.");
                 }
-            } else {
-                System.out.println("Invalid format. Use 'E2 E4'.");
-            }
+           }
         }
         scanner.close();
     }

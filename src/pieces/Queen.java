@@ -11,10 +11,12 @@ public class Queen extends Piece {
         super(color, position);
     }
 
-    @Override
+@Override
     public List<Position> possibleMoves() {
         List<Position> moves = new ArrayList<>();
-        // TODO: Implement combined straight and diagonal movement logic
+        // Combines Rook and Bishop movement
+        moves.addAll(new Rook(color, position).possibleMoves());
+        moves.addAll(new Bishop(color, position).possibleMoves());
         return moves;
     }
 }
