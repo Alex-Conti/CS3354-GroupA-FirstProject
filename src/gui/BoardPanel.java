@@ -12,8 +12,10 @@ public class BoardPanel extends JPanel {
     private final Color lightColor = new Color(240, 217, 181);
     private final Color darkColor = new Color(181, 136, 99);
     private JPanel selectedSquare = null;
+    private JTextArea historyArea;
 
-    public BoardPanel() {
+    public BoardPanel(JTextArea historyArea) {
+        this.historyArea = historyArea;
         setLayout(new GridLayout(8, 8));
         setupInitialBoard();
     }
@@ -58,6 +60,9 @@ public class BoardPanel extends JPanel {
             JLabel selectedLabel = (JLabel) selectedSquare.getComponent(0);
             String pieceToMove = selectedLabel.getText();
             String targetPiece = clickedLabel.getText();
+
+            // Log move to history
+            historyArea.append(pieceToMove + " moved.\n");
 
             if (targetPiece.equals("bK") || targetPiece.equals("wK")) {
                 clickedLabel.setText(pieceToMove);

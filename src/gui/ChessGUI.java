@@ -10,12 +10,19 @@ public class ChessGUI extends JFrame {
 
     public ChessGUI() {
         setTitle("Java Chess Engine - Phase 2");
-        setSize(800, 800);
+        setSize(1000, 800); // Widened to fit the side panel
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        BoardPanel boardPanel = new BoardPanel();
+        // Create the History Side Panel
+        JTextArea historyArea = new JTextArea(10, 15);
+        historyArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(historyArea);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Move History"));
+        add(scrollPane, BorderLayout.EAST);
+
+        BoardPanel boardPanel = new BoardPanel(historyArea);
         add(boardPanel, BorderLayout.CENTER);
 
         setJMenuBar(createMenuBar(boardPanel));
