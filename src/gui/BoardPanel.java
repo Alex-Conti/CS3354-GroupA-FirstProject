@@ -2,6 +2,8 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BoardPanel extends JPanel {
 
@@ -11,12 +13,14 @@ public class BoardPanel extends JPanel {
     private final String[] blackPieces = {"bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"};
     private final String[] whitePieces = {"wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"};
 
+    private JPanel selectedSquare = null;
+
     public BoardPanel() {
         setLayout(new GridLayout(8, 8));
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                JPanel square = new JPanel(new BorderLayout()); 
+                JPanel square = new JPanel(new BorderLayout());
                 
                 if ((row + col) % 2 == 0) {
                     square.setBackground(lightColor);
@@ -38,8 +42,44 @@ public class BoardPanel extends JPanel {
                 }
 
                 square.add(pieceLabel);
+                square.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        handleSquareClick(square);
+                    }
+                });
+
                 add(square);
             }
+        }
+    }
+
+    private void handleSquareClick(JPanel clickedSquare) {
+        JLabel clickedLabel = (JLabel) clickedSquare.getComponent(0);
+
+        if (selectedSquare == null) {
+            if (!clickedLabel.getText().isEmpty()) {
+                selectedSquare = clickedSquare;
+                selectedSquare.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+            }
+        } else {
+            JLabel selectedLabel = (JLabel) selectedSquare.getComponent(0);
+            String pieceToMove = selectedLabel.getText();
+            String targetPiece = clickedLabel.getText();
+
+            if (targetPiece.equals("bK") || targetPiece.equals("wK")) {
+                clickedLabel.setText(pieceToMove);
+                selectedLabel.setText("");
+                
+                String winner = pieceToMove.startsWith("w") ? "White" : "Black";
+                JOptionPane.showMessageDialog(this, winner + " wins by capturing the King");
+                System.exit(0);
+            }
+
+            clickedLabel.setText(pieceToMove);
+            selectedLabel.setText("");
+            selectedSquare.setBorder(null);
+            selectedSquare = null;
         }
     }
 }
