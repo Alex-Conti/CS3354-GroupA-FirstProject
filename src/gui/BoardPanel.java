@@ -17,10 +17,12 @@ public class BoardPanel extends JPanel {
 
     private final Color lightColor = new Color(240, 217, 181);
     private final Color darkColor = new Color(181, 136, 99);
-    private JPanel selectedSquare = null;
+    private Position selectedPosition = null; 
     private JTextArea historyArea;
     private Game backendGame;
+    
     private JLabel[][] guiLabels = new JLabel[8][8];
+    private JPanel[][] guiSquares = new JPanel[8][8];
 
     public BoardPanel(JTextArea historyArea) {
         this.historyArea = historyArea;
@@ -35,16 +37,20 @@ public class BoardPanel extends JPanel {
             for (int col = 0; col < 8; col++) {
                 JPanel square = new JPanel(new BorderLayout());
                 square.setBackground((row + col) % 2 == 0 ? lightColor : darkColor);
+                guiSquares[row][col] = square;
                 
                 JLabel pieceLabel = new JLabel("", SwingConstants.CENTER);
                 pieceLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
                 guiLabels[row][col] = pieceLabel;
 
                 square.add(pieceLabel);
+                
+                final int r = row;
+                final int c = col;
                 square.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        handleSquareClick(square);
+                        handleSquareClick(r, c);
                     }
                 });
                 add(square);
@@ -76,32 +82,29 @@ public class BoardPanel extends JPanel {
         return colorPrefix + pieceType;
     }
 
-    private void handleSquareClick(JPanel clickedSquare) {
-        JLabel clickedLabel = (JLabel) clickedSquare.getComponent(0);
-        if (selectedSquare == null) {
-            if (!clickedLabel.getText().isEmpty()) {
-                selectedSquare = clickedSquare;
-                selectedSquare.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+    private void handleSquareClick(int row, int col) {
+        Position clickedPos = new Position(row, col);
+
+        if (selectedPosition == null) {
+            Piece clickedPiece = backendGame.getBoard().getPiece(clickedPos);
+            if (clickedPiece != null) {
+                selectedPosition = clickedPos;
+                guiSquares[row][col].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
             }
         } else {
-            JLabel selectedLabel = (JLabel) selectedSquare.getComponent(0);
-            String pieceToMove = selectedLabel.getText();
-            String targetPiece = clickedLabel.getText();
-
-            historyArea.append(pieceToMove + " moved.\n");
-
-            if (targetPiece.equals("bK") || targetPiece.equals("wK")) {
-                clickedLabel.setText(pieceToMove);
-                selectedLabel.setText("");
-                String winner = pieceToMove.startsWith("w") ? "White" : "Black";
-                JOptionPane.showMessageDialog(this, winner + " wins!");
-                System.exit(0);
+            // This is the fix: It now asks the Game class if the move is legal
+            boolean moveSuccessful = backendGame.makeMove(selectedPosition, clickedPos);
+            
+            if (moveSuccessful) {
+                historyArea.append("Moved piece to row " + row + ", col " + col + "\n");
+            } else {
+                historyArea.append("Invalid move attempted.\n");
             }
 
-            clickedLabel.setText(pieceToMove);
-            selectedLabel.setText("");
-            selectedSquare.setBorder(null);
-            selectedSquare = null;
+            guiSquares[selectedPosition.getRow()][selectedPosition.getColumn()].setBorder(null);
+            selectedPosition = null;
+
+            updateBoardDisplay();
         }
     }
 

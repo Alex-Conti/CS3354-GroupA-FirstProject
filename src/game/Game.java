@@ -24,6 +24,43 @@ public class Game {
         return this.board;
     }
 
+    public boolean makeMove(Position from, Position to) {
+        Piece piece = board.getPiece(from);
+        
+        if (piece != null && piece.getColor().equalsIgnoreCase(currentTurn.getColor())) {
+            List<Position> legalMoves = piece.possibleMoves();
+            boolean moveIsLegal = false;
+            
+            for (Position pos : legalMoves) {
+                if (pos.getRow() == to.getRow() && pos.getColumn() == to.getColumn()) {
+                    moveIsLegal = true;
+                    break;
+                }
+            }
+
+            if (moveIsLegal) {
+                Piece destinationPiece = board.getPiece(to);
+                if (destinationPiece != null && destinationPiece.getColor().equalsIgnoreCase(currentTurn.getColor())) {
+                    return false; 
+                }
+
+                boolean pathBlocked = false;
+                if (!(piece instanceof pieces.Knight)) {
+                    if (!board.isPathClear(from, to)) {
+                        pathBlocked = true;
+                    }
+                }
+
+                if (!pathBlocked) {
+                    board.movePiece(from, to);
+                    currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
+                    return true;
+                }
+            }
+        }
+        return false; 
+    }
+
     public void start() {
         System.out.println("Welcome to Java Console Chess!");
         play();
@@ -54,44 +91,9 @@ public class Game {
                 Position to = Utils.parsePosition(toStr);
 
                 if (from != null && to != null) {
-                    Piece piece = board.getPiece(from);
-                    
-                    if (piece != null && piece.getColor().equals(currentTurn.getColor())) {
-                        List<Position> legalMoves = piece.possibleMoves();
-                        boolean moveIsLegal = false;
-                        
-                        for (Position pos : legalMoves) {
-                            if (pos.getRow() == to.getRow() && pos.getColumn() == to.getColumn()) {
-                                moveIsLegal = true;
-                                break;
-                            }
-                        }
-
-                        if (moveIsLegal) {
-                            Piece destinationPiece = board.getPiece(to);
-                            if (destinationPiece != null && destinationPiece.getColor().equals(currentTurn.getColor())) {
-                                System.out.println("You cannot capture your own piece!");
-                                continue;
-                            }
-
-                            boolean pathBlocked = false;
-                            if (!(piece instanceof pieces.Knight)) {
-                                if (!board.isPathClear(from, to)) {
-                                    pathBlocked = true;
-                                }
-                            }
-
-                            if (!pathBlocked) {
-                                board.movePiece(from, to);
-                                currentTurn = (currentTurn == whitePlayer) ? blackPlayer : whitePlayer;
-                            } else {
-                                System.out.println("Path is blocked by another piece!");
-                            }
-                        } else {
-                            System.out.println("Invalid move for that piece!");
-                        }
-                    } else {
-                        System.out.println("No piece of your color there.");
+                    boolean success = makeMove(from, to);
+                    if (!success) {
+                        System.out.println("Invalid move. Try again.");
                     }
                 } else {
                     System.out.println("Invalid coordinates.");
