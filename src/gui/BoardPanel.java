@@ -1,7 +1,6 @@
 package gui;
 
 import game.Game;
-import game.Player;
 import board.Board;
 import board.Position;
 import pieces.*; 
@@ -17,6 +16,7 @@ public class BoardPanel extends JPanel {
 
     private final Color lightColor = new Color(240, 217, 181);
     private final Color darkColor = new Color(181, 136, 99);
+    private final Color highlightColor = new Color(144, 238, 144);
     private Position selectedPosition = null; 
     private JTextArea historyArea;
     private Game backendGame;
@@ -90,6 +90,15 @@ public class BoardPanel extends JPanel {
             if (clickedPiece != null) {
                 selectedPosition = clickedPos;
                 guiSquares[row][col].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+                
+                List<Position> moves = clickedPiece.possibleMoves();
+                if (moves != null) {
+                    for (Position p : moves) {
+                        if (p.getRow() >= 0 && p.getRow() < 8 && p.getColumn() >= 0 && p.getColumn() < 8) {
+                            guiSquares[p.getRow()][p.getColumn()].setBackground(highlightColor);
+                        }
+                    }
+                }
             }
         } else {
             boolean moveSuccessful = backendGame.makeMove(selectedPosition, clickedPos);
@@ -109,7 +118,12 @@ public class BoardPanel extends JPanel {
                 historyArea.append("Invalid move attempted.\n");
             }
 
-            guiSquares[selectedPosition.getRow()][selectedPosition.getColumn()].setBorder(null);
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                    guiSquares[r][c].setBorder(null);
+                    guiSquares[r][c].setBackground((r + c) % 2 == 0 ? lightColor : darkColor);
+                }
+            }
             selectedPosition = null;
         }
     }
