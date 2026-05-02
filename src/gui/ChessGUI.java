@@ -1,7 +1,6 @@
 package gui;
 
 import game.Game;
-import game.Player;
 import board.Board;
 import board.Position;
 import pieces.*; 
@@ -22,13 +21,19 @@ public class ChessGUI extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // NEW: Turn Indicator
+        JLabel turnLabel = new JLabel("White's Turn", SwingConstants.CENTER);
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        turnLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(turnLabel, BorderLayout.NORTH);
+
         JTextArea historyArea = new JTextArea(10, 15);
         historyArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(historyArea);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Move History"));
         add(scrollPane, BorderLayout.EAST);
 
-        BoardPanel boardPanel = new BoardPanel(historyArea);
+        BoardPanel boardPanel = new BoardPanel(historyArea, turnLabel);
         add(boardPanel, BorderLayout.CENTER);
 
         setJMenuBar(createMenuBar(boardPanel));

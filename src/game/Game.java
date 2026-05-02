@@ -23,6 +23,11 @@ public class Game {
     public Board getBoard() {
         return this.board;
     }
+    
+    // NEW: Getter for the turn indicator
+    public String getCurrentTurn() {
+        return currentTurn.getColor().substring(0, 1).toUpperCase() + currentTurn.getColor().substring(1);
+    }
 
     public boolean isKingAlive(String color) {
         for (int r = 0; r < 8; r++) {

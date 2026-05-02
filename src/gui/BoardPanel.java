@@ -19,13 +19,15 @@ public class BoardPanel extends JPanel {
     private final Color highlightColor = new Color(144, 238, 144);
     private Position selectedPosition = null; 
     private JTextArea historyArea;
+    private JLabel turnLabel;
     private Game backendGame;
     
     private JLabel[][] guiLabels = new JLabel[8][8];
     private JPanel[][] guiSquares = new JPanel[8][8];
 
-    public BoardPanel(JTextArea historyArea) {
+    public BoardPanel(JTextArea historyArea, JLabel turnLabel) {
         this.historyArea = historyArea;
+        this.turnLabel = turnLabel;
         this.backendGame = new Game();
         setLayout(new GridLayout(8, 8));
         setupInitialBoard();
@@ -106,6 +108,9 @@ public class BoardPanel extends JPanel {
             if (moveSuccessful) {
                 historyArea.append("Moved piece to row " + row + ", col " + col + "\n");
                 updateBoardDisplay();
+                
+                // NEW: Update turn indicator
+                turnLabel.setText(backendGame.getCurrentTurn() + "'s Turn");
 
                 if (!backendGame.isKingAlive("black")) {
                     JOptionPane.showMessageDialog(this, "White wins!");
