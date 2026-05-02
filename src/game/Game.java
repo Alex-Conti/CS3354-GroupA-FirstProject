@@ -7,7 +7,6 @@ import utils.Utils;
 import java.util.Scanner;
 import java.util.List;
 
-// Controller for chess match
 public class Game {
     private Board board;
     private Player whitePlayer;
@@ -19,6 +18,10 @@ public class Game {
         whitePlayer = new Player("white");
         blackPlayer = new Player("black");
         currentTurn = whitePlayer;
+    }
+
+    public Board getBoard() {
+        return this.board;
     }
 
     public void start() {
@@ -43,7 +46,6 @@ public class Game {
                 break;
             }
 
-            // Checks for proper formatting
             if (input.length() >= 5 && input.charAt(2) == ' ') {
                 String fromStr = input.substring(0, 2);
                 String toStr = input.substring(3, 5);
@@ -51,7 +53,7 @@ public class Game {
                 Position from = Utils.parsePosition(fromStr);
                 Position to = Utils.parsePosition(toStr);
 
-            if (from != null && to != null) {
+                if (from != null && to != null) {
                     Piece piece = board.getPiece(from);
                     
                     if (piece != null && piece.getColor().equals(currentTurn.getColor())) {
@@ -66,14 +68,12 @@ public class Game {
                         }
 
                         if (moveIsLegal) {
-                            // NEW: Prevent capturing your own pieces
                             Piece destinationPiece = board.getPiece(to);
                             if (destinationPiece != null && destinationPiece.getColor().equals(currentTurn.getColor())) {
                                 System.out.println("You cannot capture your own piece!");
                                 continue;
                             }
 
-                            // NEW: Collision detection (Knights jump, so they skip this check)
                             boolean pathBlocked = false;
                             if (!(piece instanceof pieces.Knight)) {
                                 if (!board.isPathClear(from, to)) {
@@ -105,7 +105,6 @@ public class Game {
         System.out.println("Game end");
     }
 
-    // Runs game from terminal
     public static void main(String[] args) {
         Game chessGame = new Game();
         chessGame.start();

@@ -1,21 +1,27 @@
 package gui;
 
+import game.Game;
+import game.Player;
+import board.Board;
+import board.Position;
+import pieces.*; 
+import utils.Utils; 
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.*;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ChessGUI extends JFrame {
 
     public ChessGUI() {
-        setTitle("Java Chess Engine - Phase 2");
-        setSize(1000, 800); // Widened to fit the side panel
+        setTitle("Java Chess Engine - Phase 3");
+        setSize(1000, 800); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Create the History Side Panel
         JTextArea historyArea = new JTextArea(10, 15);
         historyArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(historyArea);

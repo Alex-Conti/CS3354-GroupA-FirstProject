@@ -1,11 +1,17 @@
 package gui;
 
+import game.Game;
+import game.Player;
+import board.Board;
+import board.Position;
+import pieces.*; 
+import utils.Utils; 
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.awt.event.*;
 import java.util.List;
+import java.util.ArrayList;
 
 public class BoardPanel extends JPanel {
 
@@ -13,17 +19,18 @@ public class BoardPanel extends JPanel {
     private final Color darkColor = new Color(181, 136, 99);
     private JPanel selectedSquare = null;
     private JTextArea historyArea;
+    private Game backendGame;
+    private JLabel[][] guiLabels = new JLabel[8][8];
 
     public BoardPanel(JTextArea historyArea) {
         this.historyArea = historyArea;
+        this.backendGame = new Game();
         setLayout(new GridLayout(8, 8));
         setupInitialBoard();
+        updateBoardDisplay();
     }
 
     private void setupInitialBoard() {
-        String[] blackPieces = {"bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"};
-        String[] whitePieces = {"wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"};
-
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 JPanel square = new JPanel(new BorderLayout());
@@ -31,11 +38,7 @@ public class BoardPanel extends JPanel {
                 
                 JLabel pieceLabel = new JLabel("", SwingConstants.CENTER);
                 pieceLabel.setFont(new Font("Arial", Font.BOLD, 24)); 
-
-                if (row == 0) pieceLabel.setText(blackPieces[col]);
-                else if (row == 1) pieceLabel.setText("bP"); 
-                else if (row == 6) pieceLabel.setText("wP"); 
-                else if (row == 7) pieceLabel.setText(whitePieces[col]);
+                guiLabels[row][col] = pieceLabel;
 
                 square.add(pieceLabel);
                 square.addMouseListener(new MouseAdapter() {
@@ -47,6 +50,30 @@ public class BoardPanel extends JPanel {
                 add(square);
             }
         }
+    }
+
+    public void updateBoardDisplay() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                guiLabels[row][col].setText("");
+                Piece currentPiece = backendGame.getBoard().getPiece(new Position(row, col));
+                
+                if (currentPiece != null) {
+                    guiLabels[row][col].setText(getPieceAbbreviation(currentPiece));
+                }
+            }
+        }
+    }
+
+    private String getPieceAbbreviation(Piece piece) {
+        String colorPrefix = piece.getColor().equalsIgnoreCase("white") ? "w" : "b";
+        String pieceType = piece.getClass().getSimpleName().substring(0, 1);
+        
+        if (piece.getClass().getSimpleName().equals("Knight")) {
+            pieceType = "N";
+        }
+        
+        return colorPrefix + pieceType;
     }
 
     private void handleSquareClick(JPanel clickedSquare) {
@@ -61,7 +88,6 @@ public class BoardPanel extends JPanel {
             String pieceToMove = selectedLabel.getText();
             String targetPiece = clickedLabel.getText();
 
-            // Log move to history
             historyArea.append(pieceToMove + " moved.\n");
 
             if (targetPiece.equals("bK") || targetPiece.equals("wK")) {
