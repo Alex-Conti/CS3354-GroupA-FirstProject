@@ -24,6 +24,18 @@ public class Game {
         return this.board;
     }
 
+    public boolean isKingAlive(String color) {
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Piece p = board.getPiece(new Position(r, c));
+                if (p != null && p.getClass().getSimpleName().equals("King") && p.getColor().equalsIgnoreCase(color)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean makeMove(Position from, Position to) {
         Piece piece = board.getPiece(from);
         
@@ -94,6 +106,14 @@ public class Game {
                     boolean success = makeMove(from, to);
                     if (!success) {
                         System.out.println("Invalid move. Try again.");
+                    } else {
+                        if (!isKingAlive("black")) {
+                            System.out.println("White wins!");
+                            gameRunning = false;
+                        } else if (!isKingAlive("white")) {
+                            System.out.println("Black wins!");
+                            gameRunning = false;
+                        }
                     }
                 } else {
                     System.out.println("Invalid coordinates.");

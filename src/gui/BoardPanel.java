@@ -92,19 +92,25 @@ public class BoardPanel extends JPanel {
                 guiSquares[row][col].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
             }
         } else {
-            // This is the fix: It now asks the Game class if the move is legal
             boolean moveSuccessful = backendGame.makeMove(selectedPosition, clickedPos);
             
             if (moveSuccessful) {
                 historyArea.append("Moved piece to row " + row + ", col " + col + "\n");
+                updateBoardDisplay();
+
+                if (!backendGame.isKingAlive("black")) {
+                    JOptionPane.showMessageDialog(this, "White wins!");
+                    System.exit(0);
+                } else if (!backendGame.isKingAlive("white")) {
+                    JOptionPane.showMessageDialog(this, "Black wins!");
+                    System.exit(0);
+                }
             } else {
                 historyArea.append("Invalid move attempted.\n");
             }
 
             guiSquares[selectedPosition.getRow()][selectedPosition.getColumn()].setBorder(null);
             selectedPosition = null;
-
-            updateBoardDisplay();
         }
     }
 
