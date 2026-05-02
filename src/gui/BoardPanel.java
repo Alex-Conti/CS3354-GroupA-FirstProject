@@ -109,8 +109,17 @@ public class BoardPanel extends JPanel {
                 historyArea.append("Moved piece to row " + row + ", col " + col + "\n");
                 updateBoardDisplay();
                 
-                // NEW: Update turn indicator
-                turnLabel.setText(backendGame.getCurrentTurn() + "'s Turn");
+                String nextTurnStr = backendGame.getCurrentTurn();
+                boolean isCheck = backendGame.isInCheck(nextTurnStr.toLowerCase());
+
+                if (isCheck) {
+                    turnLabel.setText(nextTurnStr + "'s Turn (CHECK!)");
+                    turnLabel.setForeground(Color.RED);
+                    historyArea.append(nextTurnStr + " is in Check!\n");
+                } else {
+                    turnLabel.setText(nextTurnStr + "'s Turn");
+                    turnLabel.setForeground(Color.BLACK);
+                }
 
                 if (!backendGame.isKingAlive("black")) {
                     JOptionPane.showMessageDialog(this, "White wins!");

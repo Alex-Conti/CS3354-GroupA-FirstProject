@@ -24,7 +24,6 @@ public class Game {
         return this.board;
     }
     
-    // NEW: Getter for the turn indicator
     public String getCurrentTurn() {
         return currentTurn.getColor().substring(0, 1).toUpperCase() + currentTurn.getColor().substring(1);
     }
@@ -35,6 +34,37 @@ public class Game {
                 Piece p = board.getPiece(new Position(r, c));
                 if (p != null && p.getClass().getSimpleName().equals("King") && p.getColor().equalsIgnoreCase(color)) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isInCheck(String color) {
+        Position kingPos = null;
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Piece p = board.getPiece(new Position(r, c));
+                if (p != null && p.getClass().getSimpleName().equals("King") && p.getColor().equalsIgnoreCase(color)) {
+                    kingPos = new Position(r, c);
+                }
+            }
+        }
+        if (kingPos == null) return false;
+
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Piece p = board.getPiece(new Position(r, c));
+                if (p != null && !p.getColor().equalsIgnoreCase(color)) {
+                    List<Position> moves = p.possibleMoves();
+                    if (moves != null) {
+                        for (Position pos : moves) {
+                            if (pos.getRow() == kingPos.getRow() && pos.getColumn() == kingPos.getColumn()) {
+                                if (p instanceof pieces.Knight) return true;
+                                if (board.isPathClear(new Position(r, c), kingPos)) return true;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -112,6 +142,9 @@ public class Game {
                     if (!success) {
                         System.out.println("Invalid move. Try again.");
                     } else {
+                        if (isInCheck(currentTurn.getColor())) {
+                            System.out.println("CHECK!");
+                        }
                         if (!isKingAlive("black")) {
                             System.out.println("White wins!");
                             gameRunning = false;
